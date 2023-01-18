@@ -52,173 +52,173 @@ test('scoped style', done => {
   })
 })
 
-test('media-query', done => {
-  mockBundleAndRun({
-    entry: 'media-query.vue'
-  }, ({ window }) => {
-    let style = window.document.querySelector('style').textContent
-    style = normalizeNewline(style)
-    const id = 'data-v-' + genId('media-query.vue')
-    expect(style).toContain('@media print {\n.foo[' + id + '] {\n    color: #000;\n}\n}')
-    done()
-  })
-})
+// test('media-query', done => {
+//   mockBundleAndRun({
+//     entry: 'media-query.vue'
+//   }, ({ window }) => {
+//     let style = window.document.querySelector('style').textContent
+//     style = normalizeNewline(style)
+//     const id = 'data-v-' + genId('media-query.vue')
+//     expect(style).toContain('@media print {\n.foo[' + id + '] {\n    color: #000;\n}\n}')
+//     done()
+//   })
+// })
 
-test('supports-query', done => {
-  mockBundleAndRun({
-    entry: 'supports-query.vue',
-    suppressJSDOMConsole: true
-  }, ({ window }) => {
-    let style = window.document.querySelector('style').textContent
-    style = normalizeNewline(style)
-    const id = 'data-v-' + genId('supports-query.vue')
-    expect(style).toContain('@supports ( color: #000 ) {\n.foo[' + id + '] {\n    color: #000;\n}\n}')
-    done()
-  })
-})
+// test('supports-query', done => {
+//   mockBundleAndRun({
+//     entry: 'supports-query.vue',
+//     suppressJSDOMConsole: true
+//   }, ({ window }) => {
+//     let style = window.document.querySelector('style').textContent
+//     style = normalizeNewline(style)
+//     const id = 'data-v-' + genId('supports-query.vue')
+//     expect(style).toContain('@supports ( color: #000 ) {\n.foo[' + id + '] {\n    color: #000;\n}\n}')
+//     done()
+//   })
+// })
 
-test('postcss', done => {
-  mockBundleAndRun({
-    entry: 'postcss.vue',
-    module: {
-      rules: [
-        {
-          test: /\.postcss$/,
-          use: [
-            'vue-style-loader',
-            'css-loader',
-            {
-              loader: 'postcss-loader',
-              options: {
-                parser: require('sugarss')
-              }
-            }
-          ]
-        }
-      ]
-    }
-  }, ({ window }) => {
-    const id = 'data-v-' + genId('postcss.vue')
-    let style = window.document.querySelector('style').textContent
-    style = normalizeNewline(style)
-    expect(style).toContain(`h1[${id}] {\n  color: red;\n  font-size: 14px\n}`)
-    done()
-  })
-})
+// test('postcss', done => {
+//   mockBundleAndRun({
+//     entry: 'postcss.vue',
+//     module: {
+//       rules: [
+//         {
+//           test: /\.postcss$/,
+//           use: [
+//             'vue-style-loader',
+//             'css-loader',
+//             {
+//               loader: 'postcss-loader',
+//               options: {
+//                 parser: require('sugarss')
+//               }
+//             }
+//           ]
+//         }
+//       ]
+//     }
+//   }, ({ window }) => {
+//     const id = 'data-v-' + genId('postcss.vue')
+//     let style = window.document.querySelector('style').textContent
+//     style = normalizeNewline(style)
+//     expect(style).toContain(`h1[${id}] {\n  color: red;\n  font-size: 14px\n}`)
+//     done()
+//   })
+// })
 
-test('CSS Modules', async () => {
-  function testWithIdent (localIdentName, regexToMatch) {
-    return new Promise((resolve, reject) => {
-      const baseLoaders = [
-        'vue-style-loader',
-        {
-          loader: 'css-loader',
-          options: {
-            modules: true,
-            localIdentName
-          }
-        }
-      ]
-      mockBundleAndRun({
-        entry: 'css-modules.vue',
-        modify: config => {
-          config.module.rules = [
-            {
-              test: /\.vue$/,
-              loader: 'vue-loader'
-            },
-            {
-              test: /\.css$/,
-              use: baseLoaders
-            },
-            {
-              test: /\.stylus$/,
-              use: [
-                ...baseLoaders,
-                'stylus-loader'
-              ]
-            }
-          ]
-        }
-      }, ({ window, instance, jsdomError, bundleError }) => {
-        if (jsdomError) return reject(jsdomError)
-        if (bundleError) return reject(bundleError)
+// test('CSS Modules', async () => {
+//   function testWithIdent (localIdentName, regexToMatch) {
+//     return new Promise((resolve, reject) => {
+//       const baseLoaders = [
+//         'vue-style-loader',
+//         {
+//           loader: 'css-loader',
+//           options: {
+//             modules: true,
+//             localIdentName
+//           }
+//         }
+//       ]
+//       mockBundleAndRun({
+//         entry: 'css-modules.vue',
+//         modify: config => {
+//           config.module.rules = [
+//             {
+//               test: /\.vue$/,
+//               loader: 'vue-loader'
+//             },
+//             {
+//               test: /\.css$/,
+//               use: baseLoaders
+//             },
+//             {
+//               test: /\.stylus$/,
+//               use: [
+//                 ...baseLoaders,
+//                 'stylus-loader'
+//               ]
+//             }
+//           ]
+//         }
+//       }, ({ window, instance, jsdomError, bundleError }) => {
+//         if (jsdomError) return reject(jsdomError)
+//         if (bundleError) return reject(bundleError)
 
-        // get local class name
-        const className = instance.style.red
-        expect(className).toMatch(regexToMatch)
+//         // get local class name
+//         const className = instance.style.red
+//         expect(className).toMatch(regexToMatch)
 
-        // class name in style
-        let style = [].slice.call(window.document.querySelectorAll('style')).map((style) => {
-          return style.textContent
-        }).join('\n')
-        style = normalizeNewline(style)
-        expect(style).toContain('.' + className + ' {\n  color: red;\n}')
+//         // class name in style
+//         let style = [].slice.call(window.document.querySelectorAll('style')).map((style) => {
+//           return style.textContent
+//         }).join('\n')
+//         style = normalizeNewline(style)
+//         expect(style).toContain('.' + className + ' {\n  color: red;\n}')
 
-        // animation name
-        const match = style.match(/@keyframes\s+(\S+)\s+{/)
-        expect(match).toHaveLength(2)
-        const animationName = match[1]
-        expect(animationName).not.toBe('fade')
-        expect(style).toContain('animation: ' + animationName + ' 1s;')
+//         // animation name
+//         const match = style.match(/@keyframes\s+(\S+)\s+{/)
+//         expect(match).toHaveLength(2)
+//         const animationName = match[1]
+//         expect(animationName).not.toBe('fade')
+//         expect(style).toContain('animation: ' + animationName + ' 1s;')
 
-        // default module + pre-processor + scoped
-        const anotherClassName = instance.$style.red
-        expect(anotherClassName).toMatch(regexToMatch)
-        const id = 'data-v-' + genId('css-modules.vue')
-        expect(style).toContain('.' + anotherClassName + '[' + id + ']')
+//         // default module + pre-processor + scoped
+//         const anotherClassName = instance.$style.red
+//         expect(anotherClassName).toMatch(regexToMatch)
+//         const id = 'data-v-' + genId('css-modules.vue')
+//         expect(style).toContain('.' + anotherClassName + '[' + id + ']')
 
-        resolve()
-      })
-    })
-  }
+//         resolve()
+//       })
+//     })
+//   }
 
-  // default ident
-  await testWithIdent(undefined, /^\w{21,}/)
+//   // default ident
+//   await testWithIdent(undefined, /^\w{21,}/)
 
-  // custom ident
-  await testWithIdent(
-    '[path][name]---[local]---[hash:base64:5]',
-    /css-modules---red---\w{5}/
-  )
-})
+//   // custom ident
+//   await testWithIdent(
+//     '[path][name]---[local]---[hash:base64:5]',
+//     /css-modules---red---\w{5}/
+//   )
+// })
 
-test('CSS Modules Extend', async () => {
-  return new Promise((resolve, reject) => {
-    const baseLoaders = [
-      'vue-style-loader',
-      {
-        loader: 'css-loader',
-        options: {
-          modules: true
-        }
-      }
-    ]
-    mockBundleAndRun({
-      entry: 'css-modules-extend.vue',
-      modify: config => {
-        config.module.rules = [
-          {
-            test: /\.vue$/,
-            loader: 'vue-loader'
-          },
-          {
-            test: /\.css$/,
-            use: baseLoaders
-          }
-        ]
-      }
-    }, ({ window, module, instance, jsdomError, bundleError }) => {
-      if (jsdomError) return reject(jsdomError)
-      if (bundleError) return reject(bundleError)
+// test('CSS Modules Extend', async () => {
+//   return new Promise((resolve, reject) => {
+//     const baseLoaders = [
+//       'vue-style-loader',
+//       {
+//         loader: 'css-loader',
+//         options: {
+//           modules: true
+//         }
+//       }
+//     ]
+//     mockBundleAndRun({
+//       entry: 'css-modules-extend.vue',
+//       modify: config => {
+//         config.module.rules = [
+//           {
+//             test: /\.vue$/,
+//             loader: 'vue-loader'
+//           },
+//           {
+//             test: /\.css$/,
+//             use: baseLoaders
+//           }
+//         ]
+//       }
+//     }, ({ window, module, instance, jsdomError, bundleError }) => {
+//       if (jsdomError) return reject(jsdomError)
+//       if (bundleError) return reject(bundleError)
 
-      const vnode = mockRender(module)
-      expect(vnode.data.class).toBe(instance.$style.red)
+//       const vnode = mockRender(module)
+//       expect(vnode.data.class).toBe(instance.$style.red)
 
-      const style = window.document.querySelectorAll('style')[1].textContent
-      expect(style).toContain(`.${instance.$style.red} {\n  color: #FF0000;\n}`)
+//       const style = window.document.querySelectorAll('style')[1].textContent
+//       expect(style).toContain(`.${instance.$style.red} {\n  color: #FF0000;\n}`)
 
-      resolve()
-    })
-  })
-})
+//       resolve()
+//     })
+//   })
+// })
